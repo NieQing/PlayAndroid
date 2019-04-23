@@ -3,6 +3,7 @@ import 'package:play_android/common/base_config.dart';
 import 'package:play_android/dao/home_dao.dart';
 import 'package:play_android/model/article_model.dart';
 import 'package:play_android/common/time_util.dart';
+import 'package:play_android/widget/loading_container.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,7 +14,6 @@ class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
   List<ArticleListModel> articles;
   int _pageNum = 0;
-  bool _loadMore = true;
   bool _isLoading = true;
   ScrollController _scrollController = ScrollController();
 
@@ -24,12 +24,16 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
 
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        _loadData(loadMore: true);
-      }
-    });
+    _scrollController
+      ..addListener(() {
+        if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent) {
+          _loadData(loadMore: true);
+        }
+      })
+      ..addListener(() {
+        // TODO 监听不在顶部时，显示浮动按钮。
+      });
     _loadData();
   }
 
@@ -43,6 +47,7 @@ class _HomePageState extends State<HomePage>
     if (loadMore) {
       _pageNum++;
     } else {
+      articles?.clear();
       _pageNum = 0;
     }
 
@@ -63,13 +68,22 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  /// 刷新业务
+  Future<Null> _handleRefresh() async {
+    _loadData();
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white70,
-      child: Container(
-        color: Colors.transparent,
-        child: _buildList(),
+    return Scaffold(
+      body: LoadingContainer(
+        context: context,
+        isLoading: _isLoading,
+        child: RefreshIndicator(
+            child: MediaQuery.removePadding(
+                removeTop: true, context: context, child: _buildList()),
+            onRefresh: _handleRefresh),
       ),
     );
   }
@@ -182,6 +196,18 @@ class _ArticleItem extends StatelessWidget {
             model.chapterName,
             style: TextStyle(color: Colors.white, fontSize: 12),
           ),
+        ),
+        Opacity(
+          opacity: model.userId == -1 ? 0 : 1,
+          child: model.type == 0
+              ? Icon(
+                  Icons.favorite_border,
+                  color: Colors.grey,
+                )
+              : Icon(
+                  Icons.favorite,
+                  color: Colors.pinkAccent,
+                ),
         )
       ],
     );

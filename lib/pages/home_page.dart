@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage>
   List<ArticleListModel> articles = [];
   List<BannerListModel> banners = [];
   int _pageNum = 0;
+  double _onTop = 0;
   bool _isLoading = true;
   ScrollController _scrollController = ScrollController();
 
@@ -36,7 +37,18 @@ class _HomePageState extends State<HomePage>
         }
       })
       ..addListener(() {
-        // TODO 监听不在顶部时，显示浮动按钮。
+        if (_scrollController.offset == 0) {
+          setState(() {
+            _onTop = 0;
+          });
+        }
+      })
+      ..addListener(() {
+        if (_scrollController.offset > 0) {
+          setState(() {
+            _onTop = 1;
+          });
+        }
       });
     _loadBanner();
     _loadData();
@@ -109,6 +121,7 @@ class _HomePageState extends State<HomePage>
                 removeTop: true, context: context, child: _buildList()),
             onRefresh: _handleRefresh),
       ),
+      floatingActionButton: _buildFab(),
     );
   }
 
@@ -124,12 +137,11 @@ class _HomePageState extends State<HomePage>
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 BannerListModel model = banners[index];
-                return WebView(
-                  context: context,
+                return WebViewWidget(
                   url: model.url,
                   title: model.title,
-                  hideAppBar: false,
                 );
+                ;
               }));
             },
             child: Image.network(
@@ -180,6 +192,26 @@ class _HomePageState extends State<HomePage>
       );
     }
   }
+
+  /// 构建回顶按钮
+  _buildFab() {
+    return Opacity(
+      opacity: _onTop,
+      child: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _scrollController.jumpTo(0);
+          });
+        },
+        elevation: 8.0,
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(
+          Icons.arrow_upward,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
 }
 
 /// 文章列表Item
@@ -196,11 +228,9 @@ class _ArticleItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return WebView(
-            context: context,
+          return WebViewWidget(
             url: model.link,
             title: model.title,
-            hideAppBar: false,
           );
         }));
       },

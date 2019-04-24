@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:play_android/common/base_config.dart';
+import 'package:play_android/common/time_util.dart';
 import 'package:play_android/dao/home_dao.dart';
 import 'package:play_android/model/article_model.dart';
-import 'package:play_android/common/time_util.dart';
+import 'package:play_android/model/banner_model.dart';
 import 'package:play_android/widget/loading_container.dart';
+import 'package:play_android/widget/webview.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,7 +15,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  List<ArticleListModel> articles;
+  List<ArticleListModel> articles = [];
+  List<BannerListModel> banners = [];
   int _pageNum = 0;
   bool _isLoading = true;
   ScrollController _scrollController = ScrollController();
@@ -34,6 +38,7 @@ class _HomePageState extends State<HomePage>
       ..addListener(() {
         // TODO 监听不在顶部时，显示浮动按钮。
       });
+    _loadBanner();
     _loadData();
   }
 
@@ -43,6 +48,24 @@ class _HomePageState extends State<HomePage>
     super.dispose();
   }
 
+  /// 加载Banner
+  void _loadBanner() {
+    HomeDAO.fetchBanner().then((BannerModel model) {
+      setState(() {
+        List<BannerListModel> items = model.data;
+        if (banners != null) {
+          banners.clear();
+          banners.addAll(items);
+        } else {
+          banners = items;
+        }
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  /// 加载文章列表
   void _loadData({loadMore = false}) {
     if (loadMore) {
       _pageNum++;
@@ -70,6 +93,7 @@ class _HomePageState extends State<HomePage>
 
   /// 刷新业务
   Future<Null> _handleRefresh() async {
+    _loadBanner();
     _loadData();
     return null;
   }
@@ -88,27 +112,73 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  /// 构建Banner
+  _buildBanner() {
+    return Container(
+      height: 180.0,
+      child: Swiper(
+        itemCount: banners.length,
+        autoplay: true,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                BannerListModel model = banners[index];
+                return WebView(
+                  context: context,
+                  url: model.url,
+                  title: model.title,
+                  hideAppBar: false,
+                );
+              }));
+            },
+            child: Image.network(
+              banners[index].imagePath,
+              fit: BoxFit.fill,
+            ),
+          );
+        },
+        pagination: SwiperPagination(),
+      ),
+    );
+  }
+
   /// 构建文章列表
   _buildList() {
     return ListView.separated(
       controller: _scrollController,
-      itemCount: articles?.length ?? 0,
-      itemBuilder: (BuildContext context, int index) => _ArticleItem(
-            index: index,
-            length: articles?.length ?? 0,
+      itemCount: articles.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index != 0) {
+          return _ArticleItem(
+            index: index - 1,
+            length: articles.length,
             model: articles[index],
-          ),
-      separatorBuilder: (BuildContext context, int index) => _buildDivider(),
+          );
+        } else {
+          return _buildBanner();
+        }
+      },
+      separatorBuilder: (BuildContext context, int index) =>
+          _buildDivider(index),
     );
   }
 
   /// 构建分割线
-  _buildDivider() {
-    return Divider(
-      height: 1,
-      indent: 10,
-      color: Colors.grey[600],
-    );
+  _buildDivider(int index) {
+    if (index != 0) {
+      return Divider(
+        height: 1,
+        indent: 10,
+        color: Colors.grey[600],
+      );
+    } else {
+      return Divider(
+        height: 0,
+        indent: 0,
+        color: Colors.transparent,
+      );
+    }
   }
 }
 
@@ -124,7 +194,16 @@ class _ArticleItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return WebView(
+            context: context,
+            url: model.link,
+            title: model.title,
+            hideAppBar: false,
+          );
+        }));
+      },
       child: PhysicalModel(
         color: Colors.transparent,
         clipBehavior: Clip.antiAlias,

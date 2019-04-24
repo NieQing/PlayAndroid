@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
+const CATCH_URLS = ['m.ctrip.com/', 'm.ctrip.com/html5/', 'm.ctrip.com/html5'];
+
 class WebView extends StatefulWidget {
   String url;
   final BuildContext context;
@@ -32,6 +34,17 @@ class _WebViewState extends State<WebView> {
   StreamSubscription<WebViewHttpError> _onHttpError;
   bool exiting = false;
 
+  _isToMain(String url) {
+    bool contain = false;
+    for (final value in CATCH_URLS) {
+      if (url.endsWith(value) ?? false) {
+        contain = true;
+        break;
+      }
+    }
+    return contain;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,7 +54,7 @@ class _WebViewState extends State<WebView> {
         webViewReference.onStateChanged.listen((WebViewStateChanged state) {
       switch (state.type) {
         case WebViewState.startLoad:
-          if (!exiting) {
+          if (_isToMain(state.url) && !exiting) {
             if (widget.backForbid) {
               webViewReference.launch(widget.url);
             } else {
@@ -78,24 +91,15 @@ class _WebViewState extends State<WebView> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: WebviewScaffold(
-              userAgent: 'null',
-              url: widget.url,
-              withZoom: true,
-              withLocalStorage: true,
-              hidden: true,
-//              initialChild: Container(
-//                color: Colors.white,
-//                child: Center(
-//                  child: Text('Loading...'),
-//                ),
-//              ),
-            ),
-          ),
-        ],
+      body: Container(
+        child: WebviewScaffold(
+          withJavascript: true,
+          userAgent: 'null',
+          url: widget.url,
+          withZoom: true,
+          withLocalStorage: true,
+          hidden: true,
+        ),
       ),
     );
   }

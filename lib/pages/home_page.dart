@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage>
           return _ArticleItem(
             index: index - 1,
             length: articles.length,
-            model: articles[index],
+            model: articles[index - 1],
           );
         } else {
           return _buildBanner();

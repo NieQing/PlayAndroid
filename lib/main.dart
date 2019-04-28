@@ -11,7 +11,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           primaryColor: Colors.green, accentColor: Colors.greenAccent),
-      home: Scaffold(
+      home: SafeArea(
+          child: Scaffold(
         appBar: AppBar(
           title: Text(
             '玩Android',
@@ -19,7 +20,10 @@ class MyApp extends StatelessWidget {
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.search, color: Colors.white,),
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
               onPressed: () {},
             )
           ],
@@ -27,7 +31,7 @@ class MyApp extends StatelessWidget {
         ),
         body: TabNavigator(),
         drawer: DrawerPage(),
-      ),
+      )),
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:play_android/common/base_config.dart';
-import 'package:play_android/common/time_util.dart';
+import 'package:play_android/util/navigator_util.dart';
+import 'package:play_android/util/time_util.dart';
 import 'package:play_android/dao/home_dao.dart';
 import 'package:play_android/model/article_model.dart';
 import 'package:play_android/model/banner_model.dart';
@@ -135,14 +136,13 @@ class _HomePageState extends State<HomePage>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                BannerListModel model = banners[index];
-                return WebViewWidget(
-                  url: model.url,
-                  title: model.title,
-                );
-                ;
-              }));
+              BannerListModel model = banners[index];
+              NavigatorUtil.push(
+                  context,
+                  WebViewWidget(
+                    url: model.url,
+                    title: model.title,
+                  ));
             },
             child: Image.network(
               banners[index].imagePath,
@@ -227,12 +227,12 @@ class _ArticleItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return WebViewWidget(
-            url: model.link,
-            title: model.title,
-          );
-        }));
+        NavigatorUtil.push(
+            context,
+            WebViewWidget(
+              url: model.link,
+              title: model.title,
+            ));
       },
       child: PhysicalModel(
         color: Colors.transparent,

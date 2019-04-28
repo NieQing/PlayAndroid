@@ -30,10 +30,24 @@
             </list>
           </value>
         </entry>
+        <entry key="cookie_jar">
+          <value>
+            <list>
+              <option value="D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/cookie_jar-1.0.0/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="cupertino_icons">
           <value>
             <list>
               <option value="D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/cupertino_icons-0.1.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="dio">
+          <value>
+            <list>
+              <option value="D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/dio-2.1.2/lib" />
             </list>
           </value>
         </entry>
@@ -198,7 +212,9 @@
       <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/boolean_selector-1.0.4/lib" />
       <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/charcode-1.1.2/lib" />
       <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/collection-1.14.11/lib" />
+      <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/cookie_jar-1.0.0/lib" />
       <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/cupertino_icons-0.1.2/lib" />
+      <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/dio-2.1.2/lib" />
       <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_page_indicator-0.0.3/lib" />
       <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/flutter_swiper-1.1.6/lib" />
       <root url="file://D:/Program Files/Flutter/.pub-cache/hosted/pub.flutter-io.cn/http-0.12.0+2/lib" />
